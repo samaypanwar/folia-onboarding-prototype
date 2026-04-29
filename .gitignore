@@ -1,0 +1,16 @@
+.DS_Store
+.cursor/
+*.log
+*.tmp
+node_modules/
+AGENTS.md
+DESIGN_NOTES.md
+export/
+Folia.html
+Folia v1.html
+Folia v2-print.html
+folia-characters.jsx
+folia-screens.jsx
+folia-screens2.jsx
+uploads/*.PNG
+uploads/*.jpeg
