@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Folia — Onboarding v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+    integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+    integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+    integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+    crossorigin="anonymous"></script>
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="folia-characters-v2.jsx"></script>
+  <script type="text/babel" src="folia-images.jsx"></script>
+  <script type="text/babel" src="folia-screens-v2.jsx"></script>
+  <script type="text/babel" src="folia-screens2-v2.jsx"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      background: #F7F4EF;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    #root {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input,
+    button,
+    textarea {
+      font-family: inherit;
+    }
+
+    ::-webkit-scrollbar {
+      width: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const V2_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "stageBg": "#F7F4EF",
+      "deviceWidth": 402,
+      "deviceHeight": 874
+    }/*EDITMODE-END*/;
+
+    const V2_SCREENS = ['welcome', 'plant', 'pot', 'name', 'rhythm', 'reveal', 'order'];
+    const V2_LABELS = ['Welcome', 'Choose Plant', 'Design Pot', 'Name', 'Rhythm', 'Reveal', 'Order'];
+
+    function V2Transition({ children, id }) {
+      const [vis, setVis] = React.useState(false);
+      React.useEffect(() => { const t = requestAnimationFrame(() => setVis(true)); return () => cancelAnimationFrame(t); }, []);
+      return (
+        <div style={{
+          position: 'absolute', inset: 0,
+          opacity: vis ? 1 : 0,
+          transform: vis ? 'scale(1) translateY(0)' : 'scale(0.97) translateY(10px)',
+          transition: 'opacity 0.36s ease, transform 0.36s cubic-bezier(0.22,1,0.36,1)',
+        }}>
+          {children}
+        </div>
+      );
+    }
+
+    function V2App() {
+      const [screen, setScreen] = React.useState(0);
+      const [tweaks, setTweak] = useTweaks(V2_TWEAK_DEFAULTS);
+      const [showTweaks, setShow] = React.useState(false);
+      const [state, setState] = React.useState({
+        plantId: null,
+        potShape: 'pear',
+        potColor: '#9B7EC8',
+        potApplyColor: '#B29BC3',
+        plantName: '',
+        rhythm: {},
+      });
+
+      // Persist across refresh
+      React.useEffect(() => {
+        try {
+          const s = localStorage.getItem('folia_v2_screen');
+          const d = localStorage.getItem('folia_v2_state');
+          if (s) setScreen(Number(s));
+          if (d) setState(JSON.parse(d));
+        } catch (e) { }
+      }, []);
+
+      React.useEffect(() => {
+        localStorage.setItem('folia_v2_screen', screen);
+        localStorage.setItem('folia_v2_state', JSON.stringify(state));
+      }, [screen, state]);
+
+      const next = () => setScreen(s => Math.min(s + 1, V2_SCREENS.length - 1));
+      const back = () => setScreen(s => Math.max(s - 1, 0));
+      const goTo = (i) => setScreen(i);
+      const reset = () => {
+        setScreen(0);
+        setState({ plantId: null, potShape: 'pear', potColor: '#9B7EC8', potApplyColor: '#B29BC3', plantName: '', rhythm: {} });
+        localStorage.removeItem('folia_v2_screen');
+        localStorage.removeItem('folia_v2_state');
+      };
+
+      // Tweaks host protocol
+      React.useEffect(() => {
+        const h = e => {
+          if (e.data?.type === '__activate_edit_mode') setShow(true);
+          if (e.data?.type === '__deactivate_edit_mode') setShow(false);
+        };
+        window.addEventListener('message', h);
+        window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+        return () => window.removeEventListener('message', h);
+      }, []);
+
+      const screens = [
+        <V2Screen1 onNext={next} />,
+        <V2Screen2 onNext={next} state={state} setState={setState} />,
+        <V2Screen3 onNext={next} state={state} setState={setState} />,
+        <V2Screen4 onNext={next} state={state} setState={setState} />,
+        <V2Screen5 onNext={next} state={state} setState={setState} />,
+        <V2Screen6 onNext={next} state={state} />,
+        <V2Screen7 state={state} />,
+      ];
+
+      const accentColor = state.plantId ? V2_PLANT_DATA[state.plantId].color : '#C4714A';
+
+      return (
+        <div id="v2-scaler" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, transformOrigin: 'center center' }}>
+
+          {/* iPhone Device */}
+          <IOSDevice width={tweaks.deviceWidth} height={tweaks.deviceHeight} dark={false}>
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: '#F5F0E8' }}>
+                <V2Transition key={screen}>
+                  {screens[screen]}
+                </V2Transition>
+              </div>
+            </div>
+          </IOSDevice>
+
+          {/* Navigation */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+            {/* Progress dots */}
+            <div style={{ display: 'flex', gap: 7, alignItems: 'center' }}>
+              {V2_SCREENS.map((_, i) => (
+                <button key={i} onClick={() => goTo(i)} title={V2_LABELS[i]} style={{
+                  width: i === screen ? 22 : 7, height: 7,
+                  borderRadius: 100,
+                  background: i === screen ? accentColor : 'rgba(44,36,32,0.2)',
+                  border: 'none', cursor: 'pointer', padding: 0,
+                  transition: 'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+                }} />
+              ))}
+            </div>
+            {/* Back + label */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, minHeight: 22 }}>
+              {screen > 0 && (
+                <button onClick={back} style={{ fontFamily: "'DM Sans',system-ui", fontSize: 12, color: 'rgba(44,36,32,0.45)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                  back
+                </button>
+              )}
+              <span style={{ fontFamily: "'DM Sans',system-ui", fontSize: 12, color: 'rgba(44,36,32,0.38)' }}>
+                {V2_LABELS[screen]}
+              </span>
+            </div>
+          </div>
+
+          {/* Tweaks Panel */}
+          {showTweaks && (
+            <TweaksPanel onClose={() => { setShow(false); window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*'); }}>
+              <TweakSection label="Stage" />
+              <TweakColor label="Background" value={tweaks.stageBg} onChange={v => setTweak('stageBg', v)} />
+              <TweakSection label="Navigate" />
+              <TweakSelect label="Jump to screen" options={V2_LABELS} value={V2_LABELS[screen]} onChange={v => goTo(V2_LABELS.indexOf(v))} />
+              <TweakButton label="Reset flow" onClick={reset} />
+            </TweaksPanel>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<V2App />);
+  </script>
+
+  <script>
+    function v2Scale() {
+      const el = document.getElementById('v2-scaler');
+      if (!el) return;
+      const W = 402 + 80, H = 874 + 18 + 52;
+      const s = Math.min(window.innerWidth / W, window.innerHeight / H, 1);
+      el.style.transform = `scale(${s})`;
+      document.body.style.background = '#F7F4EF';
+    }
+    window.addEventListener('resize', v2Scale);
+    window.addEventListener('load', v2Scale);
+    setTimeout(v2Scale, 400);
+  </script>
+</body>
+
+</html>

@@ -59,7 +59,7 @@ function V2Screen4({ onNext, state, setState }) {
         <div style={{
           fontFamily: V2T.serif, fontStyle: 'italic',
           fontSize: 14, color: V2T.muted, textAlign: 'center',
-          lineHeight: 1.6, marginBottom: 32, maxWidth: 250,
+          lineHeight: 1.6, maxWidth: 250,
           opacity: state.plantName ? 1 : 0.5,
           transition: 'opacity 0.4s ease',
         }}>
@@ -68,7 +68,7 @@ function V2Screen4({ onNext, state, setState }) {
             : 'This is who will be waiting on your desk.'}
         </div>
 
-        <div style={{ width: '100%', marginTop: 'auto' }}>
+        <div style={{ width: '100%', marginTop: 20 }}>
           <V2CTAButton onClick={onNext} disabled={!state.plantName.trim()} color={data.color} fullWidth>
             {state.plantName.trim() ? `Hello, ${firstName}` : 'Name them to continue'}
           </V2CTAButton>
@@ -129,7 +129,7 @@ function V2Screen5({ onNext, state, setState }) {
           <V2Heading>How does {name.split(' ')[0]}<br />like to explore?</V2Heading>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 22, marginBottom: 28 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
           {V2_RHYTHM_QS.map(rq => (
             <div key={rq.id}>
               <div style={{ fontFamily: V2T.serif, fontStyle: 'italic', fontSize: 15, color: V2T.charcoal, marginBottom: 9, lineHeight: 1.45 }}>
@@ -148,7 +148,7 @@ function V2Screen5({ onNext, state, setState }) {
           ))}
         </div>
 
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%', marginTop: 20 }}>
           <V2CTAButton onClick={onNext} disabled={!allDone} color={data.color} fullWidth>
             {allDone ? 'Almost there' : 'Answer to continue'}
           </V2CTAButton>
@@ -227,7 +227,7 @@ function V2Screen6({ onNext, state }) {
           They can't wait to see the world through you.
         </div>
 
-        <div style={{ opacity: stage >= 2 ? 1 : 0, transition: 'opacity 0.5s ease 0.25s', marginBottom: 36 }}>
+        <div style={{ opacity: stage >= 2 ? 1 : 0, transition: 'opacity 0.5s ease 0.25s' }}>
           <div style={{
             fontFamily: V2T.sans, fontSize: 12, fontWeight: 600,
             color: data.color, background: `${data.color}14`,
@@ -242,6 +242,7 @@ function V2Screen6({ onNext, state }) {
           transform: stage >= 3 ? 'translateY(0)' : 'translateY(8px)',
           transition: 'all 0.5s ease',
           width: '100%',
+          marginTop: 20,
         }}>
           <V2CTAButton onClick={onNext} color={data.color} fullWidth>
             Place your order
@@ -347,16 +348,18 @@ function V2Screen7({ state }) {
         <V2OrderField label="City" placeholder="Pittsburgh" />
         <V2OrderField label="ZIP code" placeholder="15213" />
 
-        <div style={{ marginBottom: 18 }}>
+        <div>
           <label style={{ fontFamily: V2T.sans, fontSize: 11, color: V2T.muted, fontWeight: 600, letterSpacing: 0.5, display: 'block', marginBottom: 5 }}>CARD NUMBER</label>
           <div style={{ background: '#fff', border: '1.5px solid rgba(44,36,32,0.1)', borderRadius: 12, padding: '12px 14px', fontFamily: V2T.sans, fontSize: 15, color: 'rgba(44,36,32,0.3)' }}>
             4242 4242 4242 4242
           </div>
         </div>
 
-        <V2CTAButton onClick={() => setDone(true)} color={data.color} fullWidth>
-          Place order - $89
-        </V2CTAButton>
+        <div style={{ marginTop: 20, width: '100%' }}>
+          <V2CTAButton onClick={() => setDone(true)} color={data.color} fullWidth>
+            Place order - $89
+          </V2CTAButton>
+        </div>
 
         <div style={{ textAlign: 'center', marginTop: 10, fontFamily: V2T.sans, fontSize: 12, color: V2T.muted }}>
           Free US delivery - 30-day returns

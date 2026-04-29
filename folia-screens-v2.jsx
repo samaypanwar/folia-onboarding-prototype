@@ -128,12 +128,12 @@ function V2Screen1({ onNext }) {
           fontFamily: V2T.serif, fontStyle: 'italic',
           fontSize: 16, color: V2T.muted,
           textAlign: 'center', lineHeight: 1.6,
-          maxWidth: 248, marginBottom: 42,
+          maxWidth: 248,
         }}>
           A desk plant that experiences<br />the world through you.
         </div>
 
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '85%', marginTop: 20 }}>
           <V2CTAButton onClick={onNext} fullWidth>Build your own</V2CTAButton>
         </div>
       </div>
@@ -208,7 +208,7 @@ function V2Screen2({ onNext, state, setState }) {
         </div>
 
         {/* 2 × 3 grid */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 18, alignContent: 'flex-start' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignContent: 'flex-start' }}>
           {V2_PLANT_ORDER.map(id => (
             <V2PlantCard key={id} plantId={id}
               selected={state.plantId === id}
@@ -217,7 +217,7 @@ function V2Screen2({ onNext, state, setState }) {
           ))}
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 8, width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20, paddingBottom: 8, width: '100%' }}>
           <V2CTAButton onClick={onNext} disabled={!state.plantId} fullWidth>
             {state.plantId ? 'Looks good' : 'Choose to continue'}
           </V2CTAButton>
@@ -393,7 +393,7 @@ function V2Screen3({ onNext, state, setState }) {
             </div>
           </div>
 
-          <div style={{ marginTop: 10, marginBottom: 12 }}>
+          <div style={{ marginTop: 10 }}>
             <div style={{ fontFamily: V2T.sans, fontWeight: 600, fontSize: 12, color: V2T.charcoal, marginBottom: 8, letterSpacing: 0.2 }}>Shape</div>
             <V2PotShapeCarousel
               selectedShape={state.potShape}
@@ -403,7 +403,7 @@ function V2Screen3({ onNext, state, setState }) {
           </div>
         </div>
 
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%', marginTop: 20 }}>
           <V2CTAButton onClick={onNext} color={accentColor} fullWidth>
             Looking good
           </V2CTAButton>

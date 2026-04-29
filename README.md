@@ -13,9 +13,9 @@ python3 -m http.server 5173
 Then open:
 
 ```text
-http://127.0.0.1:5173/Folia%20v2.html
+http://127.0.0.1:5173/
 ```
 
 ## Deploying
 
-This can be served as a static site on Vercel. The main prototype entrypoint is `Folia v2.html`, and the image assets live under `uploads/`.
+This can be served as a static site on Vercel. The deploy entrypoint is `index.html`, and the image assets live under `uploads/`.
